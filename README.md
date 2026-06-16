@@ -1,23 +1,23 @@
-# Sent-line: Real-Time Sentiment Pipeline
+# Sent-line: Real-Time Sentiment Pipeline (C++ Edition)
 
-Sent-line is a high-throughput, low-latency command-line interface (CLI) pipeline designed for real-time sentiment analysis of financial text and alternative data. It ingests simulated live feeds, processes the sentiment of the text using Natural Language Processing (NLP), persists the analytics to a time-series database, and visualizes the risk factors in a live terminal dashboard.
+Sent-line is an ultra-fast, low-latency pipeline built entirely in C++ for real-time sentiment analysis of financial text streams. It ingests simulated live feeds via Kafka, processes the sentiment text utilizing native speeds, persists the analytics to QuestDB, and visualizes the risk factors in a live terminal dashboard.
 
 ## 🏗️ System Architecture
 
 The project is built using a decoupled architecture, connected via a distributed event streaming platform.
 
-1. **Ingestion Service (`ingest.py`)**: Simulates a live data feed (e.g., financial news, tweets) and streams raw text JSON logs into an Apache Kafka topic.
-2. **Processing Engine (`engine.py`)**: A Faust stream processor that consumes raw text, computes sentiment scores using VADER, publishes the enriched data to a downstream Kafka topic, and writes historical records to QuestDB.
-3. **Live Monitor (`monitor.py`)**: A rich, real-time terminal dashboard that consumes the sentiment stream and displays a color-coded, rolling time-series view of the data.
+1. **Ingestion Service (`ingest.cpp`)**: Simulates a live data feed and securely streams raw text JSON logs to Kafka utilizing `librdkafka`.
+2. **Processing Engine (`engine.cpp`)**: A high-speed native consumer that calculates text sentiment, publishes enriched data back into Kafka, and rapidly inserts historical records to QuestDB via `libpqxx`.
+3. **Live Monitor (`monitor.cpp`)**: A terminal UI that continuously consumes the processed stream and visualizes the color-coded flow.
 
 ## 🛠️ Technology Stack
 
-- **Language**: Python 3.x
-- **Event Streaming**: Apache Kafka
-- **Stream Processing**: Faust-Streaming
-- **NLP / Quant Logic**: VADER Sentiment Analysis
+- **Language**: C++ 17
+- **Event Streaming**: Apache Kafka (`librdkafka`)
+- **Database API**: PostgreSQL Protocol (`libpqxx`)
+- **Serialization**: Modern C++ JSON (`nlohmann/json`)
 - **Time-Series Database**: QuestDB
-- **CLI & UI**: Click, Rich
+- **Build System**: CMake & vcpkg
 - **Infrastructure**: Docker & Docker Compose
 
 ---
@@ -26,28 +26,18 @@ The project is built using a decoupled architecture, connected via a distributed
 
 ### Prerequisites
 
-- **Python 3.8+**
+- **C++ Compiler** (MSVC or MinGW)
+- **CMake**
+- **vcpkg** (Microsoft C++ package manager)
 - **Docker Desktop** (Must be installed and running)
 
-### 1. Environment Setup
+### 1. Build & Compilation
 
-Open a terminal in the project directory and create a virtual environment:
-
-```bash
-# Create a virtual environment
-python -m venv venv
-
-# Activate the virtual environment (Windows)
-venv\Scripts\activate
-
-# (Optional) Activate the virtual environment (Mac/Linux)
-# source venv/bin/activate
-```
-
-Install the required dependencies:
+Using `vcpkg`, install dependencies, then configure and build the C++ executables using CMake:
 
 ```bash
-pip install kafka-python vaderSentiment faust-streaming click rich psycopg2-binary
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=[path-to-your-vcpkg]/scripts/buildsystems/vcpkg.cmake
+cmake --build build --config Release
 ```
 
 ### 2. Infrastructure Setup (Kafka & QuestDB)
